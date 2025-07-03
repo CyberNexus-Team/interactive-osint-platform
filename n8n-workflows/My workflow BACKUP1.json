@@ -1,0 +1,305 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "osint-master",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "177433ac-ce09-4df2-8638-d4ab30fb14e3",
+      "name": "Webhook",
+      "webhookId": "55a3bd38-b5c0-4df7-9047-5064a2054932"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={\n  \"parameters\": {\n    \"propertyName\": \"{{$json.body.action}}\",\n    \"rules\": [\n      {\n        \"value1\": \"search_ipinfo\"\n      }\n    ]\n  },\n  \"name\": \"Switch Action\",\n  \"type\": \"n8n-nodes-base.switch\",\n  \"typeVersion\": 1,\n  \"position\": [\n    400,\n    300\n  ]\n}\n",
+                    "rightValue": "search_ipinfo",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "eb7c8e89-61fc-4084-92bc-68dc2a1d8727"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Default"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "5c8daeb9-e605-4275-933c-38f2d818a940",
+                    "leftValue": "=search_ipinfo",
+                    "rightValue": "search_ipinfo",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "87563935-cc06-453b-b639-41865df8597e",
+      "name": "Switch",
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "=https://ipinfo.io/{{$json.body.data}}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        100
+      ],
+      "id": "0aa9734e-3824-45e1-991c-8f9f56bd56a8",
+      "name": "HTTP Request",
+      "retryOnFail": true,
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "uT8jyZJ31pNg10SM",
+          "name": "Bearer Auth account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e6beae5f-1545-452d-9958-7fc4e984d048",
+              "name": "=",
+              "value": "=",
+              "type": "string"
+            },
+            {
+              "id": "692f05b7-8d2e-4f9b-9a29-2d0c0fdd3d41",
+              "name": "=searchResult",
+              "value": "={{$node[\"HTTP Request\"].json}}",
+              "type": "string"
+            },
+            {
+              "id": "3b0da122-f54f-4da9-9f27-0ec89a3ed12d",
+              "name": "=tool",
+              "value": "=\"IPinfo.io\"",
+              "type": "string"
+            },
+            {
+              "id": "20f22521-38c1-47f5-9e00-54e3e7438018",
+              "name": "=query",
+              "value": "={{$json.body?.data || null}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        600,
+        100
+      ],
+      "id": "5a3fc683-14cb-4ce6-967d-7c714d1bb3a7",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "=/data/session-data/result_{{$now}}.json",
+        "dataPropertyName": "=data{{ JSON.stringify($json, null, 2) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        880,
+        1300
+      ],
+      "id": "edc20ebf-8c77-411f-bab2-82d9cdf214bc",
+      "name": "Read/Write Files from Disk",
+      "retryOnFail": true,
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prendiamo il tuo risultato della ricerca dal primo item in input\nconst jsonData = items[0].json.searchResult;\n\n// Convertiamo in stringa formattata JSON\nconst jsonString = JSON.stringify(jsonData, null, 2);\n\n// Creiamo un buffer e lo codifichiamo in base64\nconst base64Data = Buffer.from(jsonString).toString('base64');\n\n// Restituiamo come file binario\nreturn [\n  {\n    binary: {\n      data: {\n        data: base64Data,\n        mimeType: 'application/json',\n        fileName: 'result.json'\n      }\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        780,
+        100
+      ],
+      "id": "3f0f5dcb-e019-494e-ad21-ca001be04186",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "=/data/result.json",
+        "dataPropertyName": "=data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        960,
+        100
+      ],
+      "id": "73c20c57-86a9-44c8-bb68-c072fc237de3",
+      "name": "Read/Write Files from Disk1",
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.fullResults }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1140,
+        100
+      ],
+      "id": "5f48781c-b52d-4b16-918f-7fd4bd81310a",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Switch": {
+      "main": [
+        [],
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        []
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "86d0cc14-ec55-4c7a-a4d1-888e3779bf17",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bae02a6a63458e162e673dba8a436456944c3ac8f708aab1c3264941fa9d60f6"
+  },
+  "id": "ro6jPXcvx9fcDvma",
+  "tags": []
+}
