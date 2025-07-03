@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piattaforma OSINT Interattiva</title>
+    <style>
+        body { font-family: sans-serif; background-color: #1a1a1a; color: #f0f0f0; padding: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #444; padding-bottom: 10px; }
+        h1 { color: #00c853; }
+        button { background-color: #00c853; color: white; border: none; padding: 10px 15px; cursor: pointer; border-radius: 5px; font-weight: bold; }
+        button:disabled { background-color: #555; cursor: not-allowed; }
+        .search-section { background-color: #2a2a2a; padding: 20px; margin-top: 20px; border-radius: 8px; }
+        h3 { border-bottom: 1px solid #444; padding-bottom: 5px; color: #00c853; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 15px; align-items: center; }
+        input[type="text"] { flex-grow: 1; padding: 10px; background-color: #333; border: 1px solid #555; color: white; border-radius: 5px; }
+        #status { margin-top: 20px; padding: 10px; background-color: #333; border-radius: 5px; min-height: 20px; font-family: monospace; }
+        .status-success { background-color: #1b5e20; }
+        .status-error { background-color: #b71c1c; }
+        .status-loading { background-color: #e65100; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Piattaforma OSINT</h1>
+            <button id="generate-report-btn" disabled>Genera Report</button>
+        </div>
+
+        <div id="osint-categories">
+            <div class="search-section">
+                <h3>WEBINT - Web Intelligence</h3>
+                <div class="input-group">
+                    <input type="text" id="webint-ipinfo-input" placeholder="es. 8.8.8.8">
+                    <button id="webint-ipinfo-btn">Analizza IP (IPinfo.io)</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="status">Pronto per l'indagine.</div>
+    </div>
+
+    <script>
+        // --- CONFIGURAZIONE ---
+        const BACKEND_URL = 'http://localhost:3000'; // Il nostro backend Express
+        const API_WEBHOOK_URL = `${BACKEND_URL}/api/webhook/osint-master`; // Proxy endpoint
+
+        const sessionId = self.crypto.randomUUID();
+        const statusDiv = document.getElementById('status');
+        const generateReportBtn = document.getElementById('generate-report-btn');
+
+        // Inizializza UI
+        statusDiv.innerText = `ID Sessione: ${sessionId}`;
+
+        // Test connessione backend all'avvio
+        testBackendConnection();
+
+        async function testBackendConnection() {
+            try {
+                const response = await fetch(`http://localhost:3000/api/health`);
+                if (response.ok) {
+                    console.log('✅ Backend connesso');
+                } else {
+                    throw new Error('Backend non raggiungibile');
+                }
+            } catch (error) {
+                console.error('❌ Errore connessione backend:', error);
+                setStatus('Errore: Backend non raggiungibile', 'error');
+            }
+        }
+
+        function setStatus(message, type = 'info') {
+            statusDiv.innerText = message;
+            statusDiv.className = '';
+            if (type === 'success') statusDiv.className = 'status-success';
+            if (type === 'error') statusDiv.className = 'status-error';
+            if (type === 'loading') statusDiv.className = 'status-loading';
+        }
+
+        function enableReportButton() {
+            if (generateReportBtn.disabled) {
+                generateReportBtn.disabled = false;
+                console.log('Bottone "Genera Report" abilitato.');
+            }
+        }
+
+        // --- GESTORE ANALISI IP ---
+        const ipinfoBtn = document.getElementById('webint-ipinfo-btn');
+        const ipinfoInput = document.getElementById('webint-ipinfo-input');
+
+        ipinfoBtn.addEventListener('click', async () => {
+            const ipAddress = ipinfoInput.value.trim();
+            if (!ipAddress) {
+                alert('Per favore, inserisci un indirizzo IP.');
+                return;
+            }
+
+            // Validazione basic IP
+            const ipRegex = /^(\d{1,3}\.){3}\d{1,3}$/;
+            if (!ipRegex.test(ipAddress)) {
+                alert('Formato IP non valido. Usa il formato: 192.168.1.1');
+                return;
+            }
+
+            setStatus(`Ricerca per l'IP ${ipAddress} in corso...`, 'loading');
+            ipinfoBtn.disabled = true;
+
+            try {
+                console.log(`🔍 Analisi IP: ${ipAddress}`);
+                
+                const response = await fetch(API_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        sessionId: sessionId,
+                        action: 'search_ipinfo',
+                        data: ipAddress,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ error: 'Errore sconosciuto' }));
+                    throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                console.log('✅ Risposta ricevuta:', result);
+
+                setStatus(`✅ Risultato per ${ipAddress} salvato. Pronto per la prossima ricerca.`, 'success');
+                enableReportButton();
+
+            } catch (error) {
+                console.error('❌ Errore durante la ricerca IP:', error);
+                setStatus(`Errore durante la ricerca per ${ipAddress}: ${error.message}`, 'error');
+            } finally {
+                ipinfoBtn.disabled = false;
+            }
+        });
+
+        // Aggiungi listener per Enter nell'input IP
+        ipinfoInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !ipinfoBtn.disabled) {
+                ipinfoBtn.click();
+            }
+        });
+
+        // --- GESTORE GENERA REPORT ---
+        generateReportBtn.addEventListener('click', async () => {
+            setStatus('Generazione report in corso...', 'loading');
+            generateReportBtn.disabled = true;
+
+            try {
+                const response = await fetch(API_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        sessionId: sessionId,
+                        action: 'generate_report',
+                        timestamp: new Date().toISOString()
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ error: 'Errore sconosciuto' }));
+                    throw new Error(errorData.error || `HTTP ${response.status}`);
+                }
+
+                const result = await response.json();
+                setStatus('✅ Report generato con successo!', 'success');
+                
+                // Se il result contiene un URL per il download, aprilo
+                if (result.reportUrl) {
+                    window.open(result.reportUrl, '_blank');
+                }
+
+            } catch (error) {
+                console.error('❌ Errore generazione report:', error);
+                setStatus(`Errore nella generazione del report: ${error.message}`, 'error');
+            } finally {
+                generateReportBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
