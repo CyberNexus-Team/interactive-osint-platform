@@ -3,14 +3,29 @@ const sessionId = self.crypto.randomUUID();
 
 const generateReportBtn = document.getElementById('generate-report-btn');
 const statusDiv = document.getElementById('status');
+
+// BOTTONI E INPUT
 const ipinfoBtn = document.getElementById('webint-ipinfo-btn');
 const ipinfoInput = document.getElementById('webint-ipinfo-input');
+
 const ipstackBtn = document.getElementById('webint-ipstack-btn');
 const ipstackInput = document.getElementById('webint-ipstack-input');
 
+const ipapiBtn = document.getElementById('webint-ipapi-btn');
+const ipapiInput = document.getElementById('webint-ipapi-input');
+
+const opencageBtn = document.getElementById('webint-opencage-btn');
+const opencageInput = document.getElementById('webint-opencage-input');
+
+const mediastackBtn = document.getElementById('webint-mediastack-btn');
+const mediastackInput = document.getElementById('webint-mediastack-input');
+
+const screenshotlayerBtn = document.getElementById('webint-screenshotlayer-btn');
+const screenshotlayerInput = document.getElementById('webint-screenshotlayer-input');
+
 function initSession() {
   clearStatus();
-  addStatus(`ID Sessione: ${sessionId}`);
+  addStatus(`ID Sessione: ${sessionId}`, 'default');
 }
 
 function clearStatus() {
@@ -18,22 +33,20 @@ function clearStatus() {
   console.clear();
 }
 
-function addStatus(message, type = '') {
+function addStatus(message, type = 'default') {
   const newMessage = document.createElement('div');
   newMessage.innerText = message;
   if (type) newMessage.classList.add(`status-${type}`);
   statusDiv.appendChild(newMessage);
   statusDiv.scrollTop = statusDiv.scrollHeight;
 
-  // Log in console con emoji
-  if (type === 'loading') {
-    console.log(`⏳ ${message}`);
-  } else if (type === 'success') {
-    console.log(`✅ ${message}`);
-  } else if (type === 'error') {
-    console.error(`❌ ${message}`);
+  const emojis = { loading: '⏳', success: '✅', error: '❌', default: 'ℹ️' };
+  const prefix = emojis[type] || emojis.default;
+
+  if (type === 'error') {
+    console.error(`${prefix} ${message}`);
   } else {
-    console.log(message);
+    console.log(`${prefix} ${message}`);
   }
 }
 
@@ -50,9 +63,9 @@ async function performSearch(button, input, action, target) {
     return;
   }
 
-  clearStatus(); // 🧹 Pulisce solo all'inizio di una nuova ricerca
-
+  clearStatus();
   addStatus(`Ricerca per '${target}' con azione '${action}' in corso...`, 'loading');
+
   console.log(`📡 Inoltro richiesta a: ${N8N_WEBHOOK_URL}`);
   console.log(`📦 Payload:`, JSON.stringify({
     sessionId,
@@ -76,7 +89,6 @@ async function performSearch(button, input, action, target) {
     });
 
     if (!response.ok) throw new Error(`Errore dal server: ${response.statusText}`);
-
     await response.json();
 
     addStatus(`Risultato per '${target}' salvato. Pronto per la prossima ricerca.`, 'success');
@@ -98,10 +110,25 @@ function setupEventListeners() {
     performSearch(ipstackBtn, ipstackInput, 'search_ipstack', ipstackInput.value.trim());
   });
 
-  generateReportBtn.addEventListener('click', async () => {
-    clearStatus(); // 🧹 Pulisce solo quando parte la generazione report
-    addStatus('Generazione report in corso...', 'loading');
+  ipapiBtn.addEventListener('click', () => {
+    performSearch(ipapiBtn, ipapiInput, 'search_ipapi', ipapiInput.value.trim());
+  });
 
+  opencageBtn.addEventListener('click', () => {
+    performSearch(opencageBtn, opencageInput, 'search_opencage', opencageInput.value.trim());
+  });
+
+  mediastackBtn.addEventListener('click', () => {
+    performSearch(mediastackBtn, mediastackInput, 'search_mediastack', mediastackInput.value.trim());
+  });
+
+  screenshotlayerBtn.addEventListener('click', () => {
+    performSearch(screenshotlayerBtn, screenshotlayerInput, 'search_screenshotlayer', screenshotlayerInput.value.trim());
+  });
+
+  generateReportBtn.addEventListener('click', async () => {
+    clearStatus();
+    addStatus('Generazione report in corso...', 'loading');
     generateReportBtn.disabled = true;
 
     try {
@@ -116,8 +143,8 @@ function setupEventListeners() {
       });
 
       if (!response.ok) throw new Error(`Errore dal server: ${response.statusText}`);
-
       const result = await response.json();
+
       addStatus('Report generato con successo!', 'success');
 
       if (result.reportUrl) {
