@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   n8n:
     image: n8nio/n8n
@@ -12,3 +14,27 @@ services:
     volumes:
       - ./n8n-data:/home/node/.n8n
       - ./session-data:/data
+    depends_on:
+      - scraper
+
+  scraper:
+    build: ./scraper_service
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+    depends_on:
+      - ollama
+
+  ollama:
+    image: ollama/ollama
+    restart: always
+    # ports:
+    #   - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+volumes:
+  ollama_data:
+  n8n_data:

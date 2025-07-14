@@ -47,6 +47,64 @@
           <button id="webint-screenshotlayer-btn" type="button">Screenshot</button>
         </div>
 
+        <div class="input-group">
+          <input type="text" id="webint-financelayer-input" placeholder="placeholder" />
+          <button id="webint-financelayer-btn" type="button">Financelayer</button>
+        </div>
+
+        <div class="input-group">
+          <input type="text" id="webint-dnslookup-input" placeholder="Inserire DNS" />
+          <button id="webint-dnslookup-btn" type="button">DNS Lookup</button>
+        </div>
+
+        <div class="input-group">
+          <input type="text" id="webint-googlesearch-input" placeholder="Ricerca..." />
+          <button id="webint-googlesearch-btn" type="button">Google Search</button>
+        </div>
+
+        <!-- 🔄 Sezione Traduzione aggiornata (GIÀ PRESENTE) -->
+<div class="input-group">
+  <label for="translation-text-input">Testo da tradurre:</label><br>
+  <textarea id="translation-text-input" placeholder="Inserisci il testo da tradurre" rows="4" cols="50"></textarea><br><br>
+
+  <label for="translation-language-select">Lingua di destinazione:</label><br>
+  <select id="translation-language-select">
+    <option value="en">Inglese (en)</option>
+    <option value="it">Italiano (it)</option>
+    <option value="fr">Francese (fr)</option>
+    <option value="de">Tedesco (de)</option>
+    <option value="es">Spagnolo (es)</option>
+    <option value="pt">Portoghese (pt)</option>
+    <option value="ja">Giapponese (ja)</option>
+    <option value="zh">Cinese (zh)</option>
+  </select><br><br>
+
+  <button id="translation-btn" type="button">Traduci</button><br><br>
+
+  <div id="translation-result" style="margin-top: 10px; font-weight: bold;"></div>
+</div>
+<!-- 🔄 Fine sezione traduzione -->
+
+<!-- ✅ NUOVA SEZIONE: ScrapeGraph-AI -->
+<div class="input-group" style="flex-direction: column; align-items: stretch;">
+  <label for="webint-scrapegraph-source-input">Fonte (URL o lista di URL):</label>
+  <textarea id="webint-scrapegraph-source-input" placeholder="URL o lista di URL da analizzare (uno per riga)" rows="3" style="margin-bottom: 10px;"></textarea>
+
+  <label for="webint-scrapegraph-prompt-input">Istruzioni per l'estrazione:</label>
+  <textarea id="webint-scrapegraph-prompt-input" placeholder="Es. Estrai il nome, il ruolo e l'email di ogni persona nella pagina" rows="3"></textarea>
+
+  <div style="display: flex; gap: 10px; margin-top: 10px;">
+    <select id="webint-scrapegraph-model-select" style="flex-grow: 1; padding: 10px; background-color: #333; border: 1px solid #555; color: white; border-radius: 5px;">
+      <option value="ollama/qwen2:0.5b">Qwen2 0.5B (Veloce)</option>
+      <option value="ollama/llama3">Llama3 (Bilanciato)</option>
+      <option value="ollama/mistral">Mistral (Bilanciato)</option>
+    </select>
+    <button id="webint-scrapegraph-btn" type="button">Analizza con AI (ScrapeGraph)</button>
+  </div>
+</div>
+<!-- ✅ Fine sezione ScrapeGraph-AI -->
+
+
       </div>
     </div>
 
