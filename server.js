@@ -1,3 +1,11 @@
+// Forziamo Node a usare Cloudflare + Google DNS
+const dns = require('dns');
+dns.setServers([
+  '1.1.1.1',   // Cloudflare
+  '8.8.8.8',   // Google
+]);
+
+
 // server.js
 const express = require('express');
 const cors = require('cors');

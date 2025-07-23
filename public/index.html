@@ -14,97 +14,200 @@
     </div>
 
     <div id="osint-categories">
+      <!-- 🔍 WEBINT Section -->
       <div class="search-section">
         <h3>WEBINT - Web Intelligence</h3>
 
+        <!-- IP Analysis Tools -->
         <div class="input-group">
           <input type="text" id="webint-ipinfo-input" placeholder="es. 8.8.8.8" />
           <button id="webint-ipinfo-btn" type="button">Analizza IP (IPinfo.io)</button>
         </div>
-
         <div class="input-group">
           <input type="text" id="webint-ipstack-input" placeholder="es. 8.8.8.8" />
           <button id="webint-ipstack-btn" type="button">Analizza IP (IPStack)</button>
         </div>
-
         <div class="input-group">
           <input type="text" id="webint-ipapi-input" placeholder="es. 8.8.8.8" />
           <button id="webint-ipapi-btn" type="button">Analizza IP (IPAPI)</button>
         </div>
 
+        <!-- Geocoding -->
         <div class="input-group">
           <input type="text" id="webint-opencage-input" placeholder="placeholder" />
           <button id="webint-opencage-btn" type="button">Geocoding IP</button>
         </div>
 
+        <!-- Media and Web Tools -->
         <div class="input-group">
           <input type="text" id="webint-mediastack-input" placeholder="Inserire parola chiave" />
           <button id="webint-mediastack-btn" type="button">MediaStack</button>
         </div>
-
         <div class="input-group">
           <input type="text" id="webint-screenshotlayer-input" placeholder="placeholder" />
           <button id="webint-screenshotlayer-btn" type="button">Screenshot</button>
         </div>
-
         <div class="input-group">
           <input type="text" id="webint-financelayer-input" placeholder="placeholder" />
           <button id="webint-financelayer-btn" type="button">Financelayer</button>
         </div>
-
         <div class="input-group">
           <input type="text" id="webint-dnslookup-input" placeholder="Inserire DNS" />
           <button id="webint-dnslookup-btn" type="button">DNS Lookup</button>
         </div>
-
         <div class="input-group">
           <input type="text" id="webint-googlesearch-input" placeholder="Ricerca..." />
           <button id="webint-googlesearch-btn" type="button">Google Search</button>
         </div>
 
-        <!-- 🔄 Sezione Traduzione aggiornata (GIÀ PRESENTE) -->
-<div class="input-group">
-  <label for="translation-text-input">Testo da tradurre:</label><br>
-  <textarea id="translation-text-input" placeholder="Inserisci il testo da tradurre" rows="4" cols="50"></textarea><br><br>
+        <!-- 🧠 ScrapeGraph-AI Section -->
+        <div class="input-group" style="flex-direction: column; align-items: stretch;">
+          <label for="webint-scrapegraph-source-input">Fonte (URL o lista di URL):</label>
+          <textarea id="webint-scrapegraph-source-input" placeholder="URL o lista di URL da analizzare (uno per riga)" rows="3" style="margin-bottom: 10px;"></textarea>
+          <label for="webint-scrapegraph-prompt-input">Istruzioni per l'estrazione:</label>
+          <textarea id="webint-scrapegraph-prompt-input" placeholder="Es. Estrai il nome, il ruolo e l'email di ogni persona nella pagina" rows="3"></textarea>
+          <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <select id="webint-scrapegraph-model-select" style="flex-grow: 1; padding: 10px; background-color: #333; border: 1px solid #555; color: white; border-radius: 5px;">
+              <option value="ollama/qwen2:0.5b">Qwen2 0.5B (Veloce)</option>
+              <option value="ollama/llama3">Llama3 (Bilanciato)</option>
+              <option value="ollama/mistral">Mistral (Bilanciato)</option>
+            </select>
+            <button id="webint-scrapegraph-btn" type="button">Analizza con AI (ScrapeGraph)</button>
+          </div>
+        </div>
+      </div>
 
-  <label for="translation-language-select">Lingua di destinazione:</label><br>
-  <select id="translation-language-select">
-    <option value="en">Inglese (en)</option>
-    <option value="it">Italiano (it)</option>
-    <option value="fr">Francese (fr)</option>
-    <option value="de">Tedesco (de)</option>
-    <option value="es">Spagnolo (es)</option>
-    <option value="pt">Portoghese (pt)</option>
-    <option value="ja">Giapponese (ja)</option>
-    <option value="zh">Cinese (zh)</option>
-  </select><br><br>
+      <!-- 🛡️ THREAT INTELLIGENCE Section -->
+      <div class="search-section">
+        <h3>THREAT INTELLIGENCE</h3>
+        <div class="input-group">
+          <input type="text" id="ti-abuseipdb-input" placeholder="Inserisci IP da controllare" />
+          <button id="ti-abuseipdb-btn" type="button">AbuseIPDB</button>
+        </div>
+        <div class="input-group">
+          <input type="text" id="ti-alienvault-input" placeholder="type/indicator/section" />
+          <button id="ti-alienvault-btn" type="button">AlienVault OTX</button>
+        </div>
+        <div class="input-group">
+          <input type="text" id="ti-malshare-input" placeholder="Inserisci hash malware" />
+          <button id="ti-malshare-btn" type="button">Malshare Details</button>
+        </div>
+        <div class="input-group">
+          <input type="text" id="ti-urlscan-input" placeholder="Inserisci URL da scansionare" />
+          <button id="ti-urlscan-btn" type="button">urlscan.io Scan</button>
+        </div>
+        <div class="input-group">
+          <input type="text" id="ti-host-input" placeholder="Inserisci dominio" />
+          <button id="ti-host-btn" type="button">Host.io API</button>
+        </div>
+        <div class="input-group">
+          <input type="text" id="ti-ip2location-input" placeholder="Inserisci IP" />
+          <button id="ti-ip2location-btn" type="button">IP2Location</button>
+        </div>
+        <div class="input-group">
+          <input type="text" id="ti-iplocate-input" placeholder="Inserisci IP" />
+          <button id="ti-iplocate-btn" type="button">IPLocate.io</button>
+        </div>
+        <div class="input-group">
+          <input type="text" id="ti-virusTotal-input" placeholder="type/indicator" />
+          <button id="ti-virusTotal-btn" type="button">VirusTotal</button>
+        </div>
+        <div class="input-group">
+          <input type="text" id="ti-ipgeolocation-input" placeholder="Inserisci IP" />
+          <button id="ti-ipgeolocation-btn" type="button" style="padding: 10px 20px; border-radius: 5px; min-width: 140px;">IPGeolocation.io</button>
+        </div>
+        <div class="input-group">
+          <input type="text" id="ti-finlight-input" placeholder="Finlight (disabilitato)" disabled />
+          <button id="ti-finlight-btn" type="button" disabled style="padding: 10px 20px; border-radius: 5px; min-width: 140px;">Finlight</button>
+        </div>
+      </div>
 
-  <button id="translation-btn" type="button">Traduci</button><br><br>
+      <!-- 🌍 GEOINT Section -->
+      <div class="search-section">
+        <h3>GEOINT - Geospatial Intelligence</h3>
 
-  <div id="translation-result" style="margin-top: 10px; font-weight: bold;"></div>
-</div>
-<!-- 🔄 Fine sezione traduzione -->
+        <div class="input-group">
+          <input type="text" id="aviation-stack-input" placeholder="Inserire ID volo..." />
+          <button id="aviation-stack-btn" type="button">Aviation Stack</button>
+        </div>
+        <div class="input-group">
+          <input type="text" id="weather-stack-input" placeholder="Inserisci città..." />
+          <button id="weather-stack-btn" type="button">Weather Stack</button>
+        </div>
+        <div class="input-group">
+          <input type="text" id="position-stack-input" placeholder="Inserire coordinate" />
+          <button id="position-stack-btn" type="button">Position Stack</button>
+        </div>
+        <div class="input-group">
+          <input type="text" id="geography-api-input" placeholder="Coordinate o località" />
+          <button id="geography-api-btn" type="button">Geography API</button>
+        </div>
+      </div>
 
-<!-- ✅ NUOVA SEZIONE: ScrapeGraph-AI -->
-<div class="input-group" style="flex-direction: column; align-items: stretch;">
-  <label for="webint-scrapegraph-source-input">Fonte (URL o lista di URL):</label>
-  <textarea id="webint-scrapegraph-source-input" placeholder="URL o lista di URL da analizzare (uno per riga)" rows="3" style="margin-bottom: 10px;"></textarea>
+      <!-- 👤 HUMINT Section -->
+      <div class="search-section">
+        <h3>HUMINT - Human Intelligence</h3>
 
-  <label for="webint-scrapegraph-prompt-input">Istruzioni per l'estrazione:</label>
-  <textarea id="webint-scrapegraph-prompt-input" placeholder="Es. Estrai il nome, il ruolo e l'email di ogni persona nella pagina" rows="3"></textarea>
+        <div class="input-group">
+          <input type="text" id="humint-opencorporates-input" placeholder="Nome dell'azienda o parole chiave..." />
+          <button id="humint-opencorporates-btn" type="button">Cerca (OpenCorporates)</button>
+        </div>
+        <div class="input-group">
+          <input type="text" id="humint-number-verification-input" placeholder="Numero di telefono (es. +39349...)" />
+          <button id="humint-number-verification-btn" type="button">Verifica Numero</button>
+        </div>
+        <div class="input-group">
+          <input type="text" id="humint-email-verification-input" placeholder="Indirizzo email" />
+          <button id="humint-email-verification-btn" type="button">Verifica Email</button>
+        </div>
+        <div class="input-group">
+          <input type="text" id="humint-vat-validation-input" placeholder="Partita IVA (es. IT12345678901)" />
+          <button id="humint-vat-validation-btn" type="button">Valida Partita IVA</button>
+        </div>
+        <div class="input-group">
+          <input type="text" id="humint-bank-data-input" placeholder="IBAN (es. IT60X0542811101000000123456)" />
+          <button id="humint-bank-data-btn" type="button">Verifica IBAN</button>
+        </div>
+      </div>
 
-  <div style="display: flex; gap: 10px; margin-top: 10px;">
-    <select id="webint-scrapegraph-model-select" style="flex-grow: 1; padding: 10px; background-color: #333; border: 1px solid #555; color: white; border-radius: 5px;">
-      <option value="ollama/qwen2:0.5b">Qwen2 0.5B (Veloce)</option>
-      <option value="ollama/llama3">Llama3 (Bilanciato)</option>
-      <option value="ollama/mistral">Mistral (Bilanciato)</option>
-    </select>
-    <button id="webint-scrapegraph-btn" type="button">Analizza con AI (ScrapeGraph)</button>
-  </div>
-</div>
-<!-- ✅ Fine sezione ScrapeGraph-AI -->
+      <!-- 👥 ENRICHMENT & INTELLIGENCE Section -->
+      <div class="search-section">
+        <h3>ENRICHMENT & INTELLIGENCE</h3>
 
-
+        <div class="input-group">
+          <input type="text" id="intel-wikipedia-input" placeholder="Titolo pagina Wikipedia..." />
+          <button id="intel-wikipedia-btn" type="button">Estrai da Wikipedia</button>
+        </div>
+        <div class="input-group">
+          <input type="text" id="intel-clearbit-input" placeholder="Nome azienda..." />
+          <button id="intel-clearbit-btn" type="button">Suggerisci (Clearbit)</button>
+        </div>
+        <div class="input-group">
+          <input type="text" id="intel-openbris-input" placeholder="Nome azienda (OpenBRIS)..." />
+          <button id="intel-openbris-btn" type="button">Ricerca OpenBRIS</button>
+        </div>
+        <div class="input-group">
+          <input type="text" id="intel-veriphone-input" placeholder="Numero di telefono..." />
+          <button id="intel-veriphone-btn" type="button">Verifica Telefono</button>
+        </div>
+        <div class="input-group">
+          <input type="text" id="intel-hunter-verifier-input" placeholder="Email da verificare..." />
+          <button id="intel-hunter-verifier-btn" type="button">Hunter Verifica Email</button>
+        </div>
+        <div class="input-group">
+          <input type="text" id="intel-hunter-finder-domain-input" placeholder="Dominio (es. example.com)" />
+          <input type="text" id="intel-hunter-finder-first-input" placeholder="Nome" />
+          <input type="text" id="intel-hunter-finder-last-input" placeholder="Cognome" />
+          <button id="intel-hunter-finder-btn" type="button">Hunter Trova Email</button>
+        </div>
+        <div class="input-group">
+          <input type="text" id="intel-hunter-company-input" placeholder="Dominio azienda..." />
+          <button id="intel-hunter-company-btn" type="button">Hunter Azienda</button>
+        </div>
+        <div class="input-group">
+          <input type="text" id="intel-hunter-person-input" placeholder="Email persona..." />
+          <button id="intel-hunter-person-btn" type="button">Hunter Persona</button>
+        </div>
       </div>
     </div>
 
